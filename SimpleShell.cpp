@@ -22,7 +22,7 @@ void report_and_exit(const char* msg)
 	perror(msg);
 	exit(-1);
 }
-int KiemTraKiTu_ampersand(char* args[])
+int checkCharacterAmpersand(char* args[])
 {
 	int i = 0;
 	while (args[i] != 0)
@@ -36,7 +36,7 @@ int KiemTraKiTu_ampersand(char* args[])
 	}
 	return 1;
 }
-int KiemTraSuDungPipe(char* args[])
+int checkUsingPipe(char* args[])
 {
 	int i = 0;
 	while (args[i] != NULL)
@@ -47,7 +47,7 @@ int KiemTraSuDungPipe(char* args[])
 	}
 	return 1;
 }
-void ThucThi(char* args[], int check)
+void Execution(char* args[], int check)
 {
 	int temp = fork();
 	if (temp == 0)
@@ -67,7 +67,7 @@ void ThucThi(char* args[], int check)
 		}
 	}
 }
-int KiemTra_Operator(char* tempt, char* args[])
+int checkOperator(char* tempt, char* args[])
 {
 	int op = 3;
 	int i = 0;
@@ -91,7 +91,7 @@ int KiemTra_Operator(char* tempt, char* args[])
 	}
 	return op;
 }
-void ThucThiLenhCoChuyenHuong(char* args[], int op, int check)
+void RedirectedExecution(char* args[], int op, int check)
 {
 	pid_t pid;
 	pid = fork();
@@ -136,7 +136,7 @@ void ThucThiLenhCoChuyenHuong(char* args[], int op, int check)
 		}
 	}
 }
-void ThucThiLenhCoSuDungPipe(char* args[])
+void ExecuteUsingPipe(char* args[])
 {
 	char* args1[40];
 	char* args2[40];
@@ -189,7 +189,7 @@ void ThucThiLenhCoSuDungPipe(char* args[])
 	}
 
 }
-void Nhap_XuLy(char* args[], char* History)
+void enterHandle(char* args[], char* History)
 {
 	char* Tempt = (char*)malloc(MAXLINE * sizeof(char));
 	gets(Tempt);
@@ -203,19 +203,19 @@ void Nhap_XuLy(char* args[], char* History)
 			i++;
 			args[i] = strtok(NULL, " ");
 		} while (args[i] != NULL);
-		int check = KiemTraKiTu_ampersand(args);
-		if (KiemTra_Operator(Tempt, args) == 1 || KiemTra_Operator(Tempt, args) == 2)
+		int check = checkCharacterAmpersand(args);
+		if (checkOperator(Tempt, args) == 1 || checkOperator(Tempt, args) == 2)
 		{
-			ThucThiLenhCoChuyenHuong(args, KiemTra_Operator(Tempt, args), check);
+			RedirectedExecution(args, checkOperator(Tempt, args), check);
 		}
 		else
 		{
-			if (KiemTraSuDungPipe(args) == 0)
+			if (checkUsingPipe(args) == 0)
 			{
 				int pid2 = fork();
 				if (pid2 == 0) {
 					if (check == 0) printf("[%d]\n", getpid());
-					ThucThiLenhCoSuDungPipe(args);
+					ExecuteUsingPipe(args);
 					if (check == 0) {
 
 						_exit(0);
@@ -228,7 +228,7 @@ void Nhap_XuLy(char* args[], char* History)
 			}
 			else
 			{
-				ThucThi(args, check);
+				Execution(args, check);
 			}
 		}
 	}
@@ -254,7 +254,7 @@ int main()
 	{
 		printf("osh>");
 		fflush(stdout);
-		Nhap_XuLy(args, History);
+		enterHandle(args, History);
 
 	}
 	return 0;
